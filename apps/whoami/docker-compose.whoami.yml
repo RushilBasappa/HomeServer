@@ -1,0 +1,15 @@
+services:
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    restart: unless-stopped
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.ragnalab.xyz`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
+      - "traefik.http.routers.whoami.tls.domains[0].main=*.ragnalab.xyz"
+      - "traefik.http.routers.whoami.tls.domains[0].sans=ragnalab.xyz"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"

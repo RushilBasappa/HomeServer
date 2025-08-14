@@ -1,0 +1,17 @@
+services:
+  actual-ai:
+    image: docker.io/sakowicz/actual-ai:latest
+    container_name: actual-ai
+    restart: unless-stopped
+    environment:
+      FEATURES: '["rerunMissedTransactions","classifyOnStartup","syncAccountsBeforeClassify","freeWebSearch","suggestNewCategories"]'
+      LLM_PROVIDER: ollama
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      OLLAMA_MODEL: ${OLLAMA_MODEL}
+      ACTUAL_SERVER_URL: ${ACTUAL_SERVER_URL}
+      ACTUAL_PASSWORD: ${ACTUAL_PASSWORD}
+      ACTUAL_BUDGET_ID: ${ACTUAL_BUDGET_ID}
+    depends_on:
+      - actual-budget
+    networks:
+      - proxy-net

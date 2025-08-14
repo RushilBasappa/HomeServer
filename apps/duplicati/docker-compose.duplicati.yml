@@ -1,0 +1,51 @@
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    restart: unless-stopped
+    depends_on:
+      - portainer
+      - tandoor
+      - tandoor-db
+      - actual-budget
+      - homepage
+    environment:
+      # Set to your user/group and timezone; ensures restored files/dirs have correct ownership
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TIMEZONE:-UTC}
+      # Optional: make web UI listen on all interfaces at port 8200
+      - CLI_ARGS=--webservice-interface=any --webservice-port=8200
+      - SETTINGS_ENCRYPTION_KEY=famouspassword
+    ports:
+      - "8200:8200"
+    networks:
+      - proxy-net
+    volumes:
+      - duplicati_config:/config
+
+      - portainer_data:/sources/portainer
+      - tandoor_mediafiles:/sources/tandoor/mediafiles
+      - tandoor_staticfiles:/sources/tandoor/staticfiles
+      - tandoor_db:/sources/tandoor/db
+      - actual-budget_data:/sources/actual-budget/data
+      - homepage_config:/sources/homepage/config
+
+      - ./backups:/backups
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duplicati.rule=Host(`backup.${DOMAIN}`)"
+      - "traefik.http.routers.duplicati.entrypoints=websecure"
+      - "traefik.http.routers.duplicati.tls.certresolver=cloudflare"
+      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
+      - "homepage.group=Management"
+      - "homepage.name=Duplicati"
+      - "homepage.icon=duplicati"
+      - "homepage.href=https://backup.${DOMAIN}"
+      - "homepage.description=Backup management"
+
+volumes:
+  duplicati_config:
+    name: duplicati_config
+
+

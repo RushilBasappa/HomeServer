@@ -1,0 +1,43 @@
+# Environment files
+.env
+.env.local
+.env.production
+# Ignore env files in any subdirectory
+**/.env
+**/.env.local
+**/.env.production
+# Service-specific envs
+apps/actual-ai/.env
+
+# SSL certificates and sensitive data
+traefik/config/acme.json
+*.pem
+*.key
+*.crt
+
+# Portainer data
+portainer/data/
+
+# duplicati backups
+apps/duplicati/backups/
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp 

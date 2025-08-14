@@ -1,0 +1,24 @@
+services:
+  actual-budget:
+    image: actualbudget/actual-server:latest
+    container_name: actual-budget
+    restart: unless-stopped
+    volumes:
+      - actual-budget_data:/data
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)"
+      - "traefik.http.routers.actual-budget.entrypoints=websecure"
+      - "traefik.http.routers.actual-budget.tls.certresolver=cloudflare"
+      - "traefik.http.services.actual-budget.loadbalancer.server.port=5006"
+      - "homepage.group=Management"
+      - "homepage.name=Actual Budget"
+      - "homepage.icon=actual-budget"
+      - "homepage.href=https://budget.ragnalab.xyz"
+      - "homepage.description=Budget management"
+
+volumes:
+  actual-budget_data:
+    name: actual-budget_data

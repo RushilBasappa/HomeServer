@@ -1,0 +1,13 @@
+include:
+  - traefik/docker-compose.traefik.yml
+  - apps/whoami/docker-compose.whoami.yml
+  - apps/homepage/docker-compose.homepage.yml
+  - apps/portainer/docker-compose.portainer.yml
+  - apps/actual-budget/docker-compose.actual-budget.yml
+  - apps/actual-ai/docker-compose.actual-ai.yml
+  - apps/tandoor/docker-compose.tandoor.yml
+  - apps/duplicati/docker-compose.duplicati.yml
+networks:
+  proxy-net:
+    name: proxy-net
+    driver: bridge

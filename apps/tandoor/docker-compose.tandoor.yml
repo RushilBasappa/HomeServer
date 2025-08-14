@@ -1,0 +1,62 @@
+services:
+  tandoor:
+    image: vabene1111/recipes:latest
+    container_name: tandoor
+    restart: unless-stopped
+    depends_on:
+      - tandoor-db
+    environment:
+      - SECRET_KEY=safehaven
+      - DB_ENGINE=django.db.backends.postgresql
+      - POSTGRES_HOST=tandoor-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${TANDOOR_POSTGRES_DB}
+      - POSTGRES_USER=${TANDOOR_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TANDOOR_POSTGRES_PASSWORD}
+      - ALLOWED_HOSTS=recipes.${DOMAIN}
+      - TIMEZONE=${TIMEZONE:-UTC}
+      - REVERSE_PROXY=true
+    volumes:
+      - tandoor_mediafiles:/opt/recipes/mediafiles
+      - tandoor_staticfiles:/opt/recipes/staticfiles
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tandoor.rule=Host(`recipes.${DOMAIN}`)"
+      - "traefik.http.routers.tandoor.entrypoints=websecure"
+      - "traefik.http.routers.tandoor.tls.certresolver=cloudflare"
+      - "traefik.http.services.tandoor.loadbalancer.server.port=8080"
+      - "homepage.group=Media"
+      - "homepage.name=Tandoor Recipes"
+      - "homepage.icon=tandoor"
+      - "homepage.href=https://recipes.${DOMAIN}"
+      - "homepage.description=Self-hosted recipe manager"
+    networks:
+      - proxy-net
+      - tandoor-net
+
+  tandoor-db:
+    image: postgres:15-alpine
+    container_name: tandoor-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${TANDOOR_POSTGRES_DB}
+      - POSTGRES_USER=${TANDOOR_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TANDOOR_POSTGRES_PASSWORD}
+    volumes:
+      - tandoor_db:/var/lib/postgresql/data
+    networks:
+      - tandoor-net
+
+networks:
+  tandoor-net:
+    driver: bridge
+
+
+volumes:
+  tandoor_mediafiles:
+    name: tandoor_mediafiles
+  tandoor_staticfiles:
+    name: tandoor_staticfiles
+  tandoor_db:
+    name: tandoor_db
+
