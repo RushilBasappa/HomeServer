@@ -1,0 +1,32 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - DOMAIN=https://vault.${DOMAIN}
+      - SIGNUPS_ALLOWED=true
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}
+      - WEBSOCKET_ENABLED=true
+      - LOG_LEVEL=info
+    volumes:
+      - vaultwarden_data:/data
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vault.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=cloudflare"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - "homepage.group=Management"
+      - "homepage.name=Vaultwarden"
+      - "homepage.icon=bitwarden"
+      - "homepage.href=https://vault.${DOMAIN}"
+      - "homepage.description=Bitwarden-compatible password manager"
+
+volumes:
+  vaultwarden_data:
+    name: vaultwarden_data
+
+

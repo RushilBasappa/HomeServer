@@ -30,6 +30,7 @@ services:
       - tandoor_db:/sources/tandoor/db
       - actual-budget_data:/sources/actual-budget/data
       - homepage_config:/sources/homepage/config
+      - vaultwarden_data:/sources/vaultwarden/data
 
       - ./backups:/backups
     labels:
