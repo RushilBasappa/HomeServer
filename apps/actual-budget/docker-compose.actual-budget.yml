@@ -6,7 +6,7 @@ services:
     volumes:
       - actual-budget_data:/data
     networks:
-      - proxy-net
+      - ragnalab-net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)"

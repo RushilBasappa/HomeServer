@@ -31,8 +31,7 @@ services:
       - "homepage.href=https://recipes.${DOMAIN}"
       - "homepage.description=Self-hosted recipe manager"
     networks:
-      - proxy-net
-      - tandoor-net
+      - ragnalab-net
 
   tandoor-db:
     image: postgres:15-alpine
@@ -45,12 +44,7 @@ services:
     volumes:
       - tandoor_db:/var/lib/postgresql/data
     networks:
-      - tandoor-net
-
-networks:
-  tandoor-net:
-    driver: bridge
-
+      - ragnalab-net
 
 volumes:
   tandoor_mediafiles:

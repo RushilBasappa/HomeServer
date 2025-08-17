@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
     networks:
-      - proxy-net
+      - ragnalab-net
 
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
@@ -45,7 +45,7 @@ services:
       - dockerproxy
       - traefik
     networks:
-      - proxy-net 
+      - ragnalab-net 
 
 volumes:
   homepage_config:

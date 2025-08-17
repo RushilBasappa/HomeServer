@@ -4,7 +4,7 @@ services:
     container_name: whoami
     restart: unless-stopped
     networks:
-      - proxy-net
+      - ragnalab-net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.ragnalab.xyz`)"

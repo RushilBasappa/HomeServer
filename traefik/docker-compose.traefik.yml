@@ -14,7 +14,7 @@ services:
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./config/acme.json:/etc/traefik/acme.json
     networks:
-      - proxy-net
+      - ragnalab-net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.ragnalab.xyz`)"

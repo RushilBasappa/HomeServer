@@ -20,7 +20,7 @@ services:
     ports:
       - "8200:8200"
     networks:
-      - proxy-net
+      - ragnalab-net
     volumes:
       - duplicati_config:/config
 
