@@ -8,6 +8,7 @@ include:
   - apps/vaultwarden/docker-compose.vaultwarden.yml
   - apps/rustdesk/docker-compose.rustdesk.yml
   - apps/homeassistant/docker-compose.homeassistant.yml
+  - apps/paperless/docker-compose.paperless.yml
   # - apps/duplicati/docker-compose.duplicati.yml
   # - apps/actual-ai/docker-compose.actual-ai.yml
 

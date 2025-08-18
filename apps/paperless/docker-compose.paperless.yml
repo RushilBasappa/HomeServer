@@ -1,0 +1,77 @@
+services:
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    depends_on:
+      - paperless-db
+      - paperless-redis
+    environment:
+      - PAPERLESS_REDIS=redis://paperless-redis:6379
+      - PAPERLESS_DBHOST=paperless-db
+      - PAPERLESS_DBPORT=5432
+      - PAPERLESS_DBNAME=${PAPERLESS_POSTGRES_DB}
+      - PAPERLESS_DBUSER=${PAPERLESS_POSTGRES_USER}
+      - PAPERLESS_DBPASS=${PAPERLESS_POSTGRES_PASSWORD}
+      - PAPERLESS_SECRET_KEY=${PAPERLESS_SECRET_KEY}
+      - PAPERLESS_TIME_ZONE=${TIMEZONE:-UTC}
+      - PAPERLESS_ALLOWED_HOSTS=docs.${DOMAIN}
+      - PAPERLESS_CSRF_TRUSTED_ORIGINS=https://docs.${DOMAIN}
+      - PAPERLESS_URL=https://docs.${DOMAIN}
+    volumes:
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+      - paperless_export:/usr/src/paperless/export
+      - paperless_consume:/usr/src/paperless/consume
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless.rule=Host(`docs.${DOMAIN}`)"
+      - "traefik.http.routers.paperless.entrypoints=websecure"
+      - "traefik.http.routers.paperless.tls.certresolver=cloudflare"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+      - "homepage.group=Media"
+      - "homepage.name=Paperless-ngx"
+      - "homepage.icon=paperless"
+      - "homepage.href=https://docs.${DOMAIN}"
+      - "homepage.description=Document management system"
+    networks:
+      - ragnalab-net
+      - paperless-internal
+
+  paperless-db:
+    image: postgres:15-alpine
+    container_name: paperless-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${PAPERLESS_POSTGRES_DB}
+      - POSTGRES_USER=${PAPERLESS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${PAPERLESS_POSTGRES_PASSWORD}
+    volumes:
+      - paperless_db:/var/lib/postgresql/data
+    networks:
+      - paperless-internal
+
+  paperless-redis:
+    image: redis:7-alpine
+    container_name: paperless-redis
+    restart: unless-stopped
+    networks:
+      - paperless-internal
+
+volumes:
+  paperless_data:
+    name: paperless_data
+  paperless_media:
+    name: paperless_media
+  paperless_export:
+    name: paperless_export
+  paperless_consume:
+    name: paperless_consume
+  paperless_db:
+    name: paperless_db
+
+networks:
+  paperless-internal:
+    name: paperless-internal
+    driver: bridge
+    internal: true

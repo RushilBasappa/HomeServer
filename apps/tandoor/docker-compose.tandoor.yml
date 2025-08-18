@@ -27,11 +27,12 @@ services:
       - "traefik.http.services.tandoor.loadbalancer.server.port=8080"
       - "homepage.group=Media"
       - "homepage.name=Tandoor Recipes"
-      - "homepage.icon=tandoor"
+      - "homepage.icon=tandoor-recipes"
       - "homepage.href=https://recipes.${DOMAIN}"
       - "homepage.description=Self-hosted recipe manager"
     networks:
       - ragnalab-net
+      - tandoor-internal
 
   tandoor-db:
     image: postgres:15-alpine
@@ -44,7 +45,7 @@ services:
     volumes:
       - tandoor_db:/var/lib/postgresql/data
     networks:
-      - ragnalab-net
+      - tandoor-internal
 
 volumes:
   tandoor_mediafiles:
@@ -54,3 +55,8 @@ volumes:
   tandoor_db:
     name: tandoor_db
 
+networks:
+  tandoor-internal:
+    name: tandoor-internal
+    driver: bridge
+    internal: true
