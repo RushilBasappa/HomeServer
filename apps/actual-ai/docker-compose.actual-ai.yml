@@ -14,4 +14,4 @@ services:
     depends_on:
       - actual-budget
     networks:
-      - proxy-net
+      - ragnalab-net

@@ -1,0 +1,19 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "homepage.group=IoT"
+      - "homepage.name=Home Assistant"
+      - "homepage.icon=home-assistant"
+      - "homepage.href=https://hass.${DOMAIN}"
+      - "homepage.description=Home automation hub"
+
+volumes:
+  homeassistant_config:
+    name: homeassistant_config

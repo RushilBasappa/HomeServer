@@ -27,6 +27,9 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: ragnalab-net
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
 
 api:
   dashboard: true
