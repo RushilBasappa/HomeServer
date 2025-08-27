@@ -4,17 +4,18 @@ services:
     container_name: tandoor
     restart: unless-stopped
     depends_on:
-      - tandoor-db
+      - traefik
+      - postgres-main
     environment:
       - SECRET_KEY=safehaven
       - DB_ENGINE=django.db.backends.postgresql
-      - POSTGRES_HOST=tandoor-db
+      - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=5432
       - POSTGRES_DB=${TANDOOR_POSTGRES_DB}
       - POSTGRES_USER=${TANDOOR_POSTGRES_USER}
       - POSTGRES_PASSWORD=${TANDOOR_POSTGRES_PASSWORD}
       - ALLOWED_HOSTS=recipes.${DOMAIN}
-      - TIMEZONE=${TIMEZONE:-UTC}
+      - TZ=${TIMEZONE}
       - REVERSE_PROXY=true
     volumes:
       - tandoor_mediafiles:/opt/recipes/mediafiles
@@ -30,33 +31,14 @@ services:
       - "homepage.icon=tandoor-recipes"
       - "homepage.href=https://recipes.${DOMAIN}"
       - "homepage.description=Self-hosted recipe manager"
+      - "kuma.tandoor.http.name=Tandoor Recipes"
+      - "kuma.tandoor.http.url=https://recipes.${DOMAIN}"
     networks:
       - ragnalab-net
-      - tandoor-internal
-
-  tandoor-db:
-    image: postgres:15-alpine
-    container_name: tandoor-db
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=${TANDOOR_POSTGRES_DB}
-      - POSTGRES_USER=${TANDOOR_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${TANDOOR_POSTGRES_PASSWORD}
-    volumes:
-      - tandoor_db:/var/lib/postgresql/data
-    networks:
-      - tandoor-internal
+      - postgres-internal
 
 volumes:
   tandoor_mediafiles:
     name: tandoor_mediafiles
   tandoor_staticfiles:
     name: tandoor_staticfiles
-  tandoor_db:
-    name: tandoor_db
-
-networks:
-  tandoor-internal:
-    name: tandoor-internal
-    driver: bridge
-    internal: true

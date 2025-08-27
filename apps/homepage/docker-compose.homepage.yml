@@ -1,20 +1,4 @@
 services:
-  dockerproxy:
-    image: ghcr.io/tecnativa/docker-socket-proxy:latest
-    container_name: dockerproxy
-    environment:
-      - CONTAINERS=1 # Allow access to viewing containers
-      - SERVICES=1 # Allow access to viewing services
-      - TASKS=1 # Allow access to viewing tasks
-      - POST=0 # Disallow any POST operations (effectively read-only)
-    ports:
-      - 127.0.0.1:2375:2375
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
-    restart: unless-stopped
-    networks:
-      - ragnalab-net
-
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
@@ -22,13 +6,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - homepage_config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./config/settings.yaml:/app/config/settings.yaml
       - ./config/docker.yaml:/app/config/docker.yaml
       - ./config/services.yaml:/app/config/services.yaml
     environment:
-      - PUID=1000
-      - PGID=1000
       - HOMEPAGE_ALLOWED_HOSTS=home.ragnalab.xyz
     labels:
       - "traefik.enable=true"
@@ -41,12 +23,9 @@ services:
       - "homepage.icon=homepage"
       - "homepage.href=https://home.ragnalab.xyz"
       - "homepage.description=Service dashboard"
+      - "kuma.homepage.http.name=Homepage"
+      - "kuma.homepage.http.url=https://home.ragnalab.xyz"
     depends_on:
-      - dockerproxy
       - traefik
     networks:
-      - ragnalab-net 
-
-volumes:
-  homepage_config:
-    name: homepage_config
+      - ragnalab-net

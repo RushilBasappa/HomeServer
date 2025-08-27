@@ -4,18 +4,14 @@ services:
     container_name: duplicati
     restart: unless-stopped
     depends_on:
-      - portainer
-      - tandoor
-      - tandoor-db
-      - actual-budget
-      - homepage
+      - traefik
     environment:
       # Set to your user/group and timezone; ensures restored files/dirs have correct ownership
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - TZ=${TIMEZONE:-UTC}
       # Optional: make web UI listen on all interfaces at port 8200
-      - CLI_ARGS=--webservice-interface=any --webservice-port=8200
+      - CLI_ARGS=--webservice-interface=any --webservice-port=8200 --webservice-password=${DUPLICATI_PASSWORD} --log-level=profiling
       - SETTINGS_ENCRYPTION_KEY=famouspassword
     ports:
       - "8200:8200"
@@ -24,15 +20,24 @@ services:
     volumes:
       - duplicati_config:/config
 
-      - portainer_data:/sources/portainer
-      - tandoor_mediafiles:/sources/tandoor/mediafiles
-      - tandoor_staticfiles:/sources/tandoor/staticfiles
-      - tandoor_db:/sources/tandoor/db
-      - actual-budget_data:/sources/actual-budget/data
-      - homepage_config:/sources/homepage/config
-      - vaultwarden_data:/sources/vaultwarden/data
+      # Application data volumes
+      - actual-budget_data:/source/actual-budget/data
+      - paperless_consume:/source/paperless/consume
+      - paperless_data:/source/paperless/data
+      - paperless_export:/source/paperless/export
+      - paperless_media:/source/paperless/media
+      - portainer_data:/source/portainer
+      - tandoor_mediafiles:/source/tandoor/mediafiles
+      - tandoor_staticfiles:/source/tandoor/staticfiles
+      - vaultwarden_data:/source/vaultwarden/data
+      # - homeassistant_config:/source/homeassistant/config
 
+      # Postgres backups
+      - ../postgres/dumps:/source/postgres/dumps
+
+      # Local backup storage
       - ./backups:/backups
+      - ./restore:/restore
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.duplicati.rule=Host(`backup.${DOMAIN}`)"
@@ -44,6 +49,8 @@ services:
       - "homepage.icon=duplicati"
       - "homepage.href=https://backup.${DOMAIN}"
       - "homepage.description=Backup management"
+      - "kuma.duplicati.http.name=Duplicati"
+      - "kuma.duplicati.http.url=https://backup.${DOMAIN}"
 
 volumes:
   duplicati_config:

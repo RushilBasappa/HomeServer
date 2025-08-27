@@ -13,6 +13,8 @@ services:
       - "homepage.icon=home-assistant"
       - "homepage.href=https://hass.${DOMAIN}"
       - "homepage.description=Home automation hub"
+      - "kuma.homeassistant.http.name=Home Assistant"
+      - "kuma.homeassistant.http.url=https://hass.${DOMAIN}"
 
 volumes:
   homeassistant_config:

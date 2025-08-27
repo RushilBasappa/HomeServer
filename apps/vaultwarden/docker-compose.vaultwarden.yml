@@ -24,6 +24,8 @@ services:
       - "homepage.icon=bitwarden"
       - "homepage.href=https://vault.${DOMAIN}"
       - "homepage.description=Bitwarden-compatible password manager"
+      - "kuma.vaultwarden.http.name=Vaultwarden"
+      - "kuma.vaultwarden.http.url=https://vault.${DOMAIN}"
 
 volumes:
   vaultwarden_data:

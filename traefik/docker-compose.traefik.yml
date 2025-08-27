@@ -8,7 +8,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      # Dashboard accessible only via HTTPS with authentication
+      - "8082:8082"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -24,7 +24,6 @@ services:
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik.tls.domains[0].main=*.ragnalab.xyz"
       - "traefik.http.routers.traefik.tls.domains[0].sans=ragnalab.xyz"
-      # Basic Authentication for Dashboard
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$bQA/eH.0$$HpCMIu49Rv1smUiwSTGWw/" 
     environment:

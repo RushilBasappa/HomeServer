@@ -12,15 +12,17 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.ragnalab.xyz`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "homepage.group=Management"
       - "homepage.name=Portainer"
       - "homepage.icon=portainer.png"
-      - "homepage.href=https://portainer.ragnalab.xyz"
+      - "homepage.href=https://portainer.${DOMAIN}"
       - "homepage.description=Docker Management UI"
+      - "kuma.portainer.http.name=Portainer"
+      - "kuma.portainer.http.url=https://portainer.${DOMAIN}"
 
 volumes:
   portainer_data:

@@ -20,6 +20,7 @@ portainer/data/
 
 # duplicati backups
 apps/duplicati/backups/
+apps/duplicati/restore/
 
 # Logs
 *.log
@@ -41,3 +42,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp 
+
+# Postgres dumps
+apps/postgres/dumps/

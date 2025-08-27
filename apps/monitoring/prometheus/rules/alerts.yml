@@ -1,0 +1,111 @@
+groups:
+  - name: homelab-alerts
+    rules:
+      # System alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes"
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage is above 85% for more than 5 minutes"
+
+      # Container alerts
+      - alert: ContainerDown
+        expr: absent(container_last_seen)
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has not been seen for more than 1 minute"
+
+      - alert: ContainerHighMemoryUsage
+        expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} is using more than 80% of its memory limit"
+
+      # Application alerts
+      - alert: ApplicationDown
+        expr: up{job="application-health"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Application {{ $labels.instance }} is down"
+          description: "Application {{ $labels.instance }} has been down for more than 2 minutes"
+
+      # Traefik alerts
+      - alert: TraefikDown
+        expr: up{job="traefik"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Traefik is down"
+          description: "Traefik reverse proxy is not responding"
+
+      - alert: HighTraefikErrorRate
+        expr: rate(traefik_service_requests_total{code=~"5.."}[5m]) / rate(traefik_service_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate in Traefik"
+          description: "Error rate is above 5% for more than 5 minutes"
+
+      # Database alerts
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is not responding"
+
+      # Backup alerts
+      - alert: BackupFailed
+        expr: duplicati_backup_status{status="failed"} > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backup failed"
+          description: "Duplicati backup has failed"
+
+      # Certificate alerts
+      - alert: CertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate will expire in less than 30 days"
+
+
+

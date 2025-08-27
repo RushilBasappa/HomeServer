@@ -1,0 +1,32 @@
+services:
+  postgres-backup:
+    image: postgres:15-alpine
+    container_name: postgres-backup
+    restart: "no"
+    depends_on:
+      - postgres-main
+    env_file:
+      - ../../.env
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./scripts/db-script.sh:/db-script.sh
+      - ./dumps:/dumps
+    networks:
+      - postgres-internal
+    command: bash /db-script.sh backup
+
+  postgres-restore:
+    image: postgres:15-alpine
+    container_name: postgres-restore
+    restart: "no"
+    depends_on:
+      - postgres-main
+    env_file:
+      - ../../.env
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./scripts/db-script.sh:/db-script.sh
+      - ./dumps:/dumps
+    networks:
+      - postgres-internal
+    command: bash /db-script.sh restore

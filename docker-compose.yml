@@ -1,15 +1,18 @@
 include:
   - traefik/docker-compose.traefik.yml
-  - apps/whoami/docker-compose.whoami.yml
-  - apps/homepage/docker-compose.homepage.yml
-  - apps/portainer/docker-compose.portainer.yml
   - apps/actual-budget/docker-compose.actual-budget.yml
+  - apps/duplicati/docker-compose.duplicati.yml
+  - apps/homepage/docker-compose.homepage.yml
+  - apps/paperless/docker-compose.paperless.yml
+  - apps/portainer/docker-compose.portainer.yml
+  - apps/postgres/docker-compose.backup.yml
+  - apps/postgres/docker-compose.postgres.yml
+  - apps/rustdesk/docker-compose.rustdesk.yml
   - apps/tandoor/docker-compose.tandoor.yml
   - apps/vaultwarden/docker-compose.vaultwarden.yml
-  - apps/rustdesk/docker-compose.rustdesk.yml
-  - apps/homeassistant/docker-compose.homeassistant.yml
-  - apps/paperless/docker-compose.paperless.yml
-  # - apps/duplicati/docker-compose.duplicati.yml
+  - apps/monitoring/docker-compose.monitoring.yml
+  # - apps/whoami/docker-compose.whoami.yml
+  # - apps/homeassistant/docker-compose.homeassistant.yml
   # - apps/actual-ai/docker-compose.actual-ai.yml
 
 networks:

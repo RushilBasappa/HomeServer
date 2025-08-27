@@ -1,0 +1,62 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter - System metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # cAdvisor - Container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # Traefik metrics
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8082']
+
+  # Docker containers via cAdvisor
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__name__]
+        regex: '(container_.*)'
+        action: keep
+
+  # PostgreSQL metrics (if you add postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  # Application health checks
+  - job_name: 'application-health'
+    static_configs:
+      - targets:
+        - 'homepage:3000'
+        - 'portainer:9000'
+        - 'vaultwarden:80'
+        - 'paperless:8000'
+        - 'actual-budget:5006'
+        - 'duplicati:8200'
+    metrics_path: /health
+    scrape_interval: 30s
+
+  # Traefik service discovery
+  - job_name: 'traefik-services'
+    static_configs:
+      - targets: ['traefik:8082']
+    metrics_path: /metrics
+    scrape_interval: 10s

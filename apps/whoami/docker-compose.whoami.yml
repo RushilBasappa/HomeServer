@@ -7,9 +7,14 @@ services:
       - ragnalab-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.ragnalab.xyz`)"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.${DOMAIN}`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=cloudflare"
-      - "traefik.http.routers.whoami.tls.domains[0].main=*.ragnalab.xyz"
-      - "traefik.http.routers.whoami.tls.domains[0].sans=ragnalab.xyz"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      - "homepage.group=Management"
+      - "homepage.name=Whoami"
+      - "homepage.icon=hashicorp-consul"
+      - "homepage.href=https://whoami.${DOMAIN}"
+      - "homepage.description=Whoami"
+      - "kuma.whoami.http.name=Whoami"
+      - "kuma.whoami.http.url=https://whoami.${DOMAIN}"

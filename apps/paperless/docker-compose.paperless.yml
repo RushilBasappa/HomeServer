@@ -4,17 +4,18 @@ services:
     container_name: paperless
     restart: unless-stopped
     depends_on:
-      - paperless-db
+      - traefik
+      - postgres-main
       - paperless-redis
     environment:
       - PAPERLESS_REDIS=redis://paperless-redis:6379
-      - PAPERLESS_DBHOST=paperless-db
+      - PAPERLESS_DBHOST=${POSTGRES_HOST}
       - PAPERLESS_DBPORT=5432
       - PAPERLESS_DBNAME=${PAPERLESS_POSTGRES_DB}
       - PAPERLESS_DBUSER=${PAPERLESS_POSTGRES_USER}
       - PAPERLESS_DBPASS=${PAPERLESS_POSTGRES_PASSWORD}
       - PAPERLESS_SECRET_KEY=${PAPERLESS_SECRET_KEY}
-      - PAPERLESS_TIME_ZONE=${TIMEZONE:-UTC}
+      - PAPERLESS_TIME_ZONE=${TIMEZONE}
       - PAPERLESS_ALLOWED_HOSTS=docs.${DOMAIN}
       - PAPERLESS_CSRF_TRUSTED_ORIGINS=https://docs.${DOMAIN}
       - PAPERLESS_URL=https://docs.${DOMAIN}
@@ -34,22 +35,12 @@ services:
       - "homepage.icon=paperless"
       - "homepage.href=https://docs.${DOMAIN}"
       - "homepage.description=Document management system"
+      - "kuma.paperless.http.name=Paperless"
+      - "kuma.paperless.http.url=https://docs.${DOMAIN}"
     networks:
       - ragnalab-net
       - paperless-internal
-
-  paperless-db:
-    image: postgres:15-alpine
-    container_name: paperless-db
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=${PAPERLESS_POSTGRES_DB}
-      - POSTGRES_USER=${PAPERLESS_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${PAPERLESS_POSTGRES_PASSWORD}
-    volumes:
-      - paperless_db:/var/lib/postgresql/data
-    networks:
-      - paperless-internal
+      - postgres-internal
 
   paperless-redis:
     image: redis:7-alpine
@@ -67,8 +58,6 @@ volumes:
     name: paperless_export
   paperless_consume:
     name: paperless_consume
-  paperless_db:
-    name: paperless_db
 
 networks:
   paperless-internal:

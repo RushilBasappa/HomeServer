@@ -7,6 +7,8 @@ services:
       - actual-budget_data:/data
     networks:
       - ragnalab-net
+    depends_on:
+      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)"
@@ -16,9 +18,10 @@ services:
       - "homepage.group=Management"
       - "homepage.name=Actual Budget"
       - "homepage.icon=actual-budget"
-      - "homepage.href=https://budget.ragnalab.xyz"
+      - "homepage.href=https://budget.${DOMAIN}"
       - "homepage.description=Budget management"
-
+      - "kuma.actual-budget.http.name=Actual Budget"
+      - "kuma.actual-budget.http.url=https://budget.${DOMAIN}"
 volumes:
   actual-budget_data:
     name: actual-budget_data

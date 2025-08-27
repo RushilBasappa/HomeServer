@@ -21,6 +21,9 @@ entryPoints:
 
   websecure:
     address: ":443"
+    
+  metrics:
+    address: ":8082"
 
 providers:
   docker:
@@ -34,6 +37,11 @@ providers:
 api:
   dashboard: true
   insecure: false
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addServicesLabels: true
 
 certificatesResolvers:
   cloudflare:
